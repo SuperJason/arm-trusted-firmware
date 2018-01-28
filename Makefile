@@ -39,7 +39,7 @@ VERSION_MINOR		:= 1
 #
 
 # Build verbosity
-V			:= 0
+V			:= 1
 # Debug build
 DEBUG			:= 0
 # Build architecture

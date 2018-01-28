@@ -105,7 +105,9 @@
 #define BL32_SRAM_BASE                  0x10010000 /* 64k chunk */
 #define BL32_SRAM_LIMIT                 (64 * 1024) /* not very big */
 
+/* rpi3: 0x08400000 by JF */
 #define BL32_DRAM_BASE                  DRAM_SEC_BASE
+/* rpi3: 0x08800000 by JF */
 #define BL32_DRAM_LIMIT                 (DRAM_SEC_BASE+DRAM_SEC_SIZE)
 
 #if (PLAT_TSP_LOCATION_ID == PLAT_TRUSTED_DRAM_ID)
@@ -139,7 +141,7 @@
  ******************************************************************************/
 #define ADDR_SPACE_SIZE			(1ull << 32)
 
-# define DEBUG_XLAT_TABLE 0 /* enables page table dumping/debug in xlat_tables.c */
+# define DEBUG_XLAT_TABLE 1 /* enables page table dumping/debug in xlat_tables.c */
 
 #if IMAGE_BL1 || IMAGE_BL31 || IMAGE_BL32
 # define MAX_XLAT_TABLES		4

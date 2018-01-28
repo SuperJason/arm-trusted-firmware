@@ -35,6 +35,7 @@
 #include <platform_def.h>
 #include <string.h>
 #include <xlat_tables.h>
+#include <debug.h>
 
 
 #ifndef DEBUG_XLAT_TABLE
@@ -42,7 +43,7 @@
 #endif
 
 #if DEBUG_XLAT_TABLE
-#define debug_print(...) printf(__VA_ARGS__)
+#define debug_print(...) tf_printf(__VA_ARGS__)
 #else
 #define debug_print(...) ((void)0)
 #endif
@@ -77,7 +78,11 @@ static void print_mmap(void)
 	debug_print("mmap:\n");
 	mmap_region_t *mm = mmap;
 	while (mm->size) {
+/*
 		debug_print(" %010lx %010lx %10lx %x\n", mm->base_va,
+					mm->base_pa, mm->size, mm->attr);
+*/
+		debug_print(" 0x%lx 0x%lx 0x%lx 0x%x\n", mm->base_va,
 					mm->base_pa, mm->size, mm->attr);
 		++mm;
 	};
@@ -100,6 +105,10 @@ void mmap_add_region(unsigned long base_pa, unsigned long base_va,
 	if (!size)
 		return;
 
+#if DEBUG_XLAT_TABLE
+	debug_print(" va:0x%lx pa:0x%lx sz:0x%lx attr:0x%x\n", mm->base_va,
+			mm->base_pa, mm->size, mm->attr);
+#endif
 	/* Find correct place in mmap to insert new region */
 	while (mm->base_va < base_va && mm->size)
 		++mm;
@@ -123,6 +132,9 @@ void mmap_add_region(unsigned long base_pa, unsigned long base_va,
 
 void mmap_add(const mmap_region_t *mm)
 {
+#if DEBUG_XLAT_TABLE
+	debug_print("%s: entry\n", __func__);
+#endif
 	while (mm->size) {
 		mmap_add_region(mm->base_pa, mm->base_va, mm->size, mm->attr);
 		++mm;
@@ -190,6 +202,10 @@ static mmap_region_t *init_xlation_table(mmap_region_t *mm,
 					unsigned long base_va,
 					unsigned long *table, unsigned level)
 {
+	/* rpi3:
+	 * L1_XLAT_ADDRESS_SHIFT: 30
+	 * XLAT_TABLE_ENTRIES_SHIFT: 9
+	 * by JF */
 	unsigned level_size_shift = L1_XLAT_ADDRESS_SHIFT - (level - 1) *
 						XLAT_TABLE_ENTRIES_SHIFT;
 	unsigned level_size = 1 << level_size_shift;
@@ -208,8 +224,10 @@ static mmap_region_t *init_xlation_table(mmap_region_t *mm,
 			continue;
 		}
 
-		debug_print("      %010lx %8lx " + 6 - 2 * level, base_va,
-				level_size);
+		debug_print(
+			"      %d->mm->base:0x%lx, mm->size: 0x%lx, base:0x%lx, size:0x%lx "
+			+ 6 - 2 * level,
+			level, mm->base_va, mm->size, base_va, level_size);
 
 		if (mm->base_va >= base_va + level_size) {
 			/* Next region is after area so nothing to map yet */
@@ -231,12 +249,13 @@ static mmap_region_t *init_xlation_table(mmap_region_t *mm,
 			assert(next_xlat <= MAX_XLAT_TABLES);
 			desc = TABLE_DESC | (unsigned long)new_table;
 
+			debug_print(" desc: 0x%x\n", desc);
 			/* Recurse to fill in new table */
 			mm = init_xlation_table(mm, base_va,
 						new_table, level+1);
+		} else {
+			debug_print(" desc: 0x%x\n", desc);
 		}
-
-		debug_print("\n");
 
 		*table++ = desc;
 		base_va += level_size;
@@ -278,6 +297,9 @@ void init_xlat_tables(void)
 	print_mmap();
 	init_xlation_table(mmap, 0, l1_xlation_table, 1);
 	tcr_ps_bits = calc_physical_addr_size_bits(max_pa);
+	debug_print("tcr_ps_bits: 0x%x\n", tcr_ps_bits);
+	debug_print("max_pa: 0x%llx\n", max_pa);
+	debug_print("max_va: 0x%llx\n", max_va);
 	assert(max_va < ADDR_SPACE_SIZE);
 }
 

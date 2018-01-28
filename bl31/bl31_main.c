@@ -141,6 +141,10 @@ void bl31_prepare_next_image_entry(void)
 {
 	entry_point_info_t *next_image_info;
 	uint32_t image_type;
+#define A123_DEBUG 1
+#if A123_DEBUG
+	unsigned int *p;
+#endif
 
 	/* Determine which image to execute next */
 	image_type = bl31_get_next_image_type();
@@ -154,6 +158,27 @@ void bl31_prepare_next_image_entry(void)
 		(image_type == SECURE) ? "secure" : "normal");
 	INFO("BL3-1: Next image address = 0x%llx\n",
 		(unsigned long long) next_image_info->pc);
+
+#if A123_DEBUG
+	next_image_info->pc = 0x06000000;
+	INFO("BL3-1: Next image address = 0x%llx\n",
+		(unsigned long long) next_image_info->pc);
+	/*
+	p = (unsigned int *)next_image_info->pc;
+	*/
+
+	/* Failed
+	 * p = (unsigned int *)0x06000000; */
+	p = (unsigned int *)0x08000000;
+	INFO("BL3-1: Try to read addr: 0x%llx\n", (unsigned long long)p);
+	INFO(" [0]:0x%x, [1]:0x%x, [2]:0x%x, [3]:0x%x\n\t  [4]:0x%x, [5]:0x%x, [6]:0x%x, [7]:0x%x\n",
+		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	p = (unsigned int *)0x08400000;
+	INFO("BL3-1: Try to read addr: 0x%llx\n", (unsigned long long)p);
+	INFO(" [0]:0x%x, [1]:0x%x, [2]:0x%x, [3]:0x%x\n\t  [4]:0x%x, [5]:0x%x, [6]:0x%x, [7]:0x%x\n",
+		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+
+#endif
 	INFO("BL3-1: Next image spsr = 0x%x\n", next_image_info->spsr);
 	cm_init_context(read_mpidr_el1(), next_image_info);
 	cm_prepare_el3_exit(image_type);
