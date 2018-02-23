@@ -174,6 +174,7 @@ static int psci_call_on_handlers(aff_map_node_t *target_cpu_nodes[],
 		if (node == NULL)
 			continue;
 
+		NOTICE("Jason Debug, %s, level: %d\n", __func__, level);
 		/*
 		 * TODO: In case of an error should there be a way
 		 * of undoing what we might have setup at higher
@@ -257,6 +258,7 @@ int psci_afflvl_on(unsigned long target_cpu,
 	if (psci_spd_pm && psci_spd_pm->svc_on)
 		psci_spd_pm->svc_on(target_cpu);
 
+	NOTICE("Jason Debug %s():%d\n", __func__, __LINE__);
 	/* Perform generic, architecture and platform specific handling. */
 	rc = psci_call_on_handlers(target_cpu_nodes,
 				   start_afflvl,

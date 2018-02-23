@@ -94,7 +94,7 @@ int32_t rpi3_affinst_on(uint64_t mpidr,
 	(void)cluster;
 	(void)cpu;
 
-	VERBOSE("#%s(%d): mpidr:%llx, afflvl:%x, state:%x linear_id: %d\n",
+	NOTICE("#%s(%d): mpidr:%llx, afflvl:%x, state:%x linear_id: %d\n",
 		  __func__, __LINE__,
 		  mpidr, afflvl, state, linear_id);
 

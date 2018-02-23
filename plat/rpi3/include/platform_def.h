@@ -141,7 +141,7 @@
  ******************************************************************************/
 #define ADDR_SPACE_SIZE			(1ull << 32)
 
-# define DEBUG_XLAT_TABLE 1 /* enables page table dumping/debug in xlat_tables.c */
+# define DEBUG_XLAT_TABLE 0 /* enables page table dumping/debug in xlat_tables.c */
 
 #if IMAGE_BL1 || IMAGE_BL31 || IMAGE_BL32
 # define MAX_XLAT_TABLES		4

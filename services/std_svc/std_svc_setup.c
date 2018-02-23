@@ -68,6 +68,7 @@ uint64_t std_svc_smc_handler(uint32_t smc_fid,
 	 * value
 	 */
 	if (is_psci_fid(smc_fid)) {
+		NOTICE("Jason Debug PSCI Call: 0x%x \n", smc_fid);
 		return psci_smc_handler(smc_fid, x1, x2, x3, x4, cookie,
 				handle, flags);
 	}

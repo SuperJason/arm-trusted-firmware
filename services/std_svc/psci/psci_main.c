@@ -49,6 +49,7 @@ int psci_cpu_on(unsigned long target_cpu,
 	unsigned int start_afflvl, end_afflvl;
 	entry_point_info_t ep;
 
+	NOTICE("Jason Debug %s():%d\n", __func__, __LINE__);
 	/* Determine if the cpu exists of not */
 	rc = psci_validate_mpidr(target_cpu, MPIDR_AFFLVL0);
 	if (rc != PSCI_E_SUCCESS) {
@@ -72,7 +73,6 @@ int psci_cpu_on(unsigned long target_cpu,
 	rc = psci_get_ns_ep_info(&ep, entrypoint, context_id);
 	if (rc != PSCI_E_SUCCESS)
 		return rc;
-
 
 	/*
 	 * To turn this cpu on, specify which affinity
