@@ -168,8 +168,9 @@ void bl31_prepare_next_image_entry(void)
 	*/
 
 	/* Failed
-	 * p = (unsigned int *)0x06000000; */
-	p = (unsigned int *)0x08000000;
+	 * p = (unsigned int *)0x06000000;
+	p = (unsigned int *)0x08000000; */
+	p = (unsigned int *)0x00080000;
 	INFO("BL3-1: Try to read addr: 0x%llx\n", (unsigned long long)p);
 	INFO(" [0]:0x%x, [1]:0x%x, [2]:0x%x, [3]:0x%x\n\t  [4]:0x%x, [5]:0x%x, [6]:0x%x, [7]:0x%x\n",
 		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
@@ -178,6 +179,8 @@ void bl31_prepare_next_image_entry(void)
 	INFO(" [0]:0x%x, [1]:0x%x, [2]:0x%x, [3]:0x%x\n\t  [4]:0x%x, [5]:0x%x, [6]:0x%x, [7]:0x%x\n",
 		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
 
+	//next_image_info->spsr = 0x3c5;
+	next_image_info->spsr = 0x3c9;
 #endif
 	INFO("BL3-1: Next image spsr = 0x%x\n", next_image_info->spsr);
 	cm_init_context(read_mpidr_el1(), next_image_info);

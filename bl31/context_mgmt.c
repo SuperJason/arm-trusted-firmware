@@ -41,6 +41,7 @@
 #include <platform_def.h>
 #include <runtime_svc.h>
 #include <string.h>
+#include <debug.h>
 
 
 /*******************************************************************************
@@ -223,6 +224,14 @@ void cm_prepare_el3_exit(uint32_t security_state)
 	cpu_context_t *ctx = cm_get_context(security_state);
 
 	assert(ctx);
+
+	scr_el3 = read_scr_el3();
+	INFO("BL3-1: scr_el3 = 0x%x\n", scr_el3);
+	scr_el3 |= SCR_HCE_BIT;
+	INFO("BL3-1: scr_el3 = 0x%x\n", scr_el3);
+	write_scr_el3(scr_el3);
+	scr_el3 = read_scr_el3();
+	INFO("BL3-1: after read again scr_el3 = 0x%x\n", scr_el3);
 
 	if (security_state == NON_SECURE) {
 		scr_el3 = read_ctx_reg(get_el3state_ctx(ctx), CTX_SCR_EL3);
