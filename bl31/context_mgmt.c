@@ -155,6 +155,7 @@ void cm_init_context(uint64_t mpidr, const entry_point_info_t *ep)
 	scr_el3 &= ~(SCR_NS_BIT | SCR_RW_BIT | SCR_FIQ_BIT | SCR_IRQ_BIT |
 			SCR_ST_BIT | SCR_HCE_BIT);
 
+	INFO("BL3-1: %s(): security_state: 0x%x\n", __func__, security_state);
 	if (security_state != SECURE)
 		scr_el3 |= SCR_NS_BIT;
 
@@ -196,6 +197,7 @@ void cm_init_context(uint64_t mpidr, const entry_point_info_t *ep)
 		scr_el3 |= SCR_HCE_BIT;
 	}
 
+	INFO("BL3-1: %s() scr_el3 = 0x%x\n", __func__, scr_el3);
 	/* Populate EL3 state so that we've the right context before doing ERET */
 	state = get_el3state_ctx(ctx);
 	write_ctx_reg(state, CTX_SCR_EL3, scr_el3);
@@ -233,8 +235,11 @@ void cm_prepare_el3_exit(uint32_t security_state)
 	scr_el3 = read_scr_el3();
 	INFO("BL3-1: after read again scr_el3 = 0x%x\n", scr_el3);
 
+	INFO("BL3-1: %s(): security_state: 0x%x\n", __func__, security_state);
+
 	if (security_state == NON_SECURE) {
 		scr_el3 = read_ctx_reg(get_el3state_ctx(ctx), CTX_SCR_EL3);
+		INFO("BL3-1: from ctx scr_el3 = 0x%x\n", scr_el3);
 		if (scr_el3 & SCR_HCE_BIT) {
 			/* Use SCTLR_EL1.EE value to initialise sctlr_el2 */
 			sctlr_elx = read_ctx_reg(get_sysregs_ctx(ctx),
